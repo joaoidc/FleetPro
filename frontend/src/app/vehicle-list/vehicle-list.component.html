@@ -1,0 +1,152 @@
+<div class="page-header">
+  <div class="header-content">
+    <h3>Veículos</h3>
+    <p>Gerencie a frota da sua empresa</p>
+  </div>
+  <button class="btn-primary" (click)="openModal()">+ Novo Veículo</button>
+</div>
+
+<div class="card-container">
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Modelo/Marca</th>
+          <th>Ano</th>
+          <th>Chassi</th>
+          <th>Renavam</th>
+          <th class="actions-col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vehicle of vehicles">
+          <td>
+            <span class="badge-plate">{{ vehicle.placa }}</span>
+          </td>
+          <td>
+            <div class="vehicle-info">
+              <span class="model">{{ vehicle.modelo }}</span>
+              <span class="brand">{{ vehicle.marca }}</span>
+            </div>
+          </td>
+          <td>{{ vehicle.ano }}</td>
+          <td class="mono">{{ vehicle.chassi }}</td>
+          <td class="mono">{{ vehicle.renavam }}</td>
+          <td>
+            <div class="actions">
+              <button class="btn-icon edit" (click)="editVehicle(vehicle)">
+                ✎
+              </button>
+              <button
+                class="btn-icon delete"
+                (click)="confirmDelete(vehicle.id!)"
+              >
+                ✕
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="vehicles.length === 0">
+          <td colspan="6" class="empty-state">Nenhum veículo cadastrado.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>{{ isEditing ? "Editar Veículo" : "Novo Veículo" }}</h3>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+    <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Placa</label>
+          <input
+            type="text"
+            formControlName="placa"
+            placeholder="ABC1D23"
+            appMask="placa"
+          />
+        </div>
+        <div class="form-group">
+          <label>Marca</label>
+          <input type="text" formControlName="marca" placeholder="Ex: Toyota" />
+        </div>
+        <div class="form-group">
+          <label>Modelo</label>
+          <input
+            type="text"
+            formControlName="modelo"
+            placeholder="Ex: Corolla XEi"
+          />
+        </div>
+        <div class="form-group">
+          <label>Ano</label>
+          <input
+            type="text"
+            formControlName="ano"
+            placeholder="Ex: 2024"
+            appMask="ano"
+          />
+        </div>
+        <div class="form-group">
+          <label>Chassi</label>
+          <input
+            type="text"
+            formControlName="chassi"
+            placeholder="Ex: 9BW ZZZ377 NT 004253"
+            appMask="chassi"
+          />
+        </div>
+        <div class="form-group">
+          <label>Renavam</label>
+          <input
+            type="text"
+            formControlName="renavam"
+            placeholder="Ex: 12345678901"
+            appMask="renavam"
+          />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="!vehicleForm.valid"
+        >
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-content modal-sm">
+    <div class="modal-header">
+      <h3>Excluir Veículo</h3>
+      <button class="close-btn" (click)="cancelDelete()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>
+        Tem certeza que deseja excluir este veículo? Esta ação não pode ser
+        desfeita.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="cancelDelete()">
+        Cancelar
+      </button>
+      <button type="button" class="btn-danger" (click)="deleteVehicle()">
+        Excluir
+      </button>
+    </div>
+  </div>
+</div>
