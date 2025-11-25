@@ -56,6 +56,7 @@ RUN mkdir -p /app/data && chown -R node:node /app/data
 RUN mkdir -p /var/lib/rabbitmq /var/log/rabbitmq
 RUN chown -R rabbitmq:rabbitmq /var/lib/rabbitmq /var/log/rabbitmq
 ENV RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
+RUN rabbitmq-plugins enable rabbitmq_management
 
 EXPOSE 80 5672 15672
 
