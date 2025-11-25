@@ -61,7 +61,7 @@ RUN mkdir -p /etc/rabbitmq && \
 
 EXPOSE 80 5672 15672
 
-HEALTHCHECK --interval=30s --timeout=10s \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s \
   CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
