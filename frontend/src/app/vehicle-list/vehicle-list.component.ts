@@ -16,6 +16,8 @@ export class VehicleListComponent implements OnInit {
   currentVehicleId: number | null = null;
   vehicleIdToDelete: number | null = null;
   vehicleForm: FormGroup;
+  errorMessage: string = '';
+  showErrorModal: boolean = false;
 
   constructor(private vehicleService: VehicleService, private fb: FormBuilder) {
     this.vehicleForm = this.fb.group({
@@ -81,6 +83,11 @@ export class VehicleListComponent implements OnInit {
     }
   }
 
+  closeErrorModal(): void {
+    this.showErrorModal = false;
+    this.errorMessage = '';
+  }
+
   onSubmit(): void {
     if (this.vehicleForm.valid) {
       const vehicleData = this.vehicleForm.value;
@@ -88,16 +95,37 @@ export class VehicleListComponent implements OnInit {
       if (this.isEditing && this.currentVehicleId) {
         this.vehicleService
           .updateVehicle(this.currentVehicleId, vehicleData)
-          .subscribe(() => {
-            this.loadVehicles();
-            this.closeModal();
+          .subscribe({
+            next: () => {
+              this.loadVehicles();
+              this.closeModal();
+            },
+            error: (err) => this.handleError(err),
           });
       } else {
-        this.vehicleService.createVehicle(vehicleData).subscribe(() => {
-          this.loadVehicles();
-          this.closeModal();
+        this.vehicleService.createVehicle(vehicleData).subscribe({
+          next: () => {
+            this.loadVehicles();
+            this.closeModal();
+          },
+          error: (err) => this.handleError(err),
         });
       }
     }
+  }
+
+  private handleError(error: any): void {
+    console.error('Erro na requisição:', error);
+    if (error.error && error.error.message) {
+      // Backend pode retornar array de strings ou string única
+      if (Array.isArray(error.error.message)) {
+        this.errorMessage = error.error.message.join('\n');
+      } else {
+        this.errorMessage = error.error.message;
+      }
+    } else {
+      this.errorMessage = 'Ocorreu um erro inesperado. Tente novamente.';
+    }
+    this.showErrorModal = true;
   }
 }

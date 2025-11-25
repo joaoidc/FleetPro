@@ -150,3 +150,20 @@
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" *ngIf="showErrorModal">
+  <div class="modal-content modal-sm">
+    <div class="modal-header error-header">
+      <h3 style="color: #dc3545">Erro</h3>
+      <button class="close-btn" (click)="closeErrorModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="white-space: pre-line">{{ errorMessage }}</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" (click)="closeErrorModal()">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
