@@ -28,6 +28,8 @@ RUN npm rebuild sqlite3
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=frontend-builder /app/frontend/dist/frontend /usr/share/nginx/html
 
+RUN mkdir -p /run/nginx
+
 RUN echo 'server { \
     listen 80; \
     server_name localhost; \
@@ -37,7 +39,7 @@ RUN echo 'server { \
         try_files $uri $uri/ /index.html; \
     } \
     location /api/ { \
-        proxy_pass http://localhost:3000/; \
+        proxy_pass http://127.0.0.1:3000/; \
         proxy_http_version 1.1; \
         proxy_set_header Upgrade $http_upgrade; \
         proxy_set_header Connection "upgrade"; \
@@ -72,5 +74,8 @@ environment=DATABASE_PATH="/app/data/db.sqlite" \
 RUN mkdir -p /app/data && chown -R node:node /app/data
 
 EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
