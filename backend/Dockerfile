@@ -2,11 +2,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
 RUN apk add --no-cache python3 make g++
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 
@@ -18,11 +18,11 @@ WORKDIR /app
 
 RUN apk add --no-cache python3 make g++ sqlite
 
+# Copiar artefatos do build
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/package-lock.json ./
+COPY --from=builder /app/package*.json ./
 
-RUN npm ci --only=production
+RUN npm install --production
 
 RUN npm rebuild sqlite3
 
