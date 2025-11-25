@@ -49,27 +49,7 @@ RUN echo 'server { \
 }' > /etc/nginx/http.d/default.conf
 
 RUN mkdir -p /var/log/supervisor
-RUN echo '[supervisord] \
-nodaemon=true \
-\
-[program:nginx] \
-command=nginx -g "daemon off;" \
-autorestart=true \
-stdout_logfile=/dev/stdout \
-stdout_logfile_maxbytes=0 \
-stderr_logfile=/dev/stderr \
-stderr_logfile_maxbytes=0 \
-\
-[program:backend] \
-command=npm run start:prod \
-directory=/app/backend \
-autorestart=true \
-stdout_logfile=/dev/stdout \
-stdout_logfile_maxbytes=0 \
-stderr_logfile=/dev/stderr \
-stderr_logfile_maxbytes=0 \
-environment=DATABASE_PATH="/app/data/db.sqlite" \
-' > /etc/supervisord.conf
+COPY supervisord.conf /etc/supervisord.conf
 
 RUN mkdir -p /app/data && chown -R node:node /app/data
 
