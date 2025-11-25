@@ -3,6 +3,7 @@ version: "3.8"
 services:
   rabbitmq:
     image: rabbitmq:3-management
+    restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -11,25 +12,25 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
-  backend:
-    build: ./backend
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
     ports:
-      - "3000:3000"
+      - "80:80"
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DATABASE_PATH=/app/data/db.sqlite
     depends_on:
       rabbitmq:
         condition: service_healthy
     volumes:
       - sqlite_data:/app/data
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-
 volumes:
   sqlite_data:
+  rabbitmq_data:
