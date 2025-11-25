@@ -1,11 +1,11 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-COPY . .
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+COPY src ./src
 
-RUN if [ -d "backend" ]; then \
-      cp -r backend/* .; \
-    fi
 
 RUN apk add --no-cache python3 make g++
 
