@@ -16,7 +16,7 @@ RUN npm run build
 
 FROM node:20-alpine
 
-RUN apk add --no-cache nginx supervisor python3 make g++ sqlite
+RUN apk add --no-cache nginx supervisor python3 make g++ sqlite rabbitmq-server
 
 WORKDIR /app/backend
 COPY --from=backend-builder /app/backend/dist ./dist
@@ -53,9 +53,13 @@ COPY supervisord.conf /etc/supervisord.conf
 
 RUN mkdir -p /app/data && chown -R node:node /app/data
 
-EXPOSE 80
+RUN mkdir -p /var/lib/rabbitmq /var/log/rabbitmq
+RUN chown -R rabbitmq:rabbitmq /var/lib/rabbitmq /var/log/rabbitmq
+ENV RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
 
-HEALTHCHECK --interval=30s --timeout=3s \
+EXPOSE 80 5672 15672
+
+HEALTHCHECK --interval=30s --timeout=10s \
   CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
